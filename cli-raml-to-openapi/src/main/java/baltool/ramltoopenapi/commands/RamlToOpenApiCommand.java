@@ -18,13 +18,9 @@
 package baltool.ramltoopenapi.commands;
 
 import io.ballerina.cli.BLauncherCmd;
-import org.ballerina.ramltoopenapi.converter.RamlToOpenApiConverter;
+import org.ballerina.ramltoopenapi.RamlToOpenApiConverter;
 import org.ballerina.ramltoopenapi.exception.ConverterException;
-import org.ballerina.ramltoopenapi.model.openapi.OpenApiDocument;
-import org.ballerina.ramltoopenapi.model.raml.RamlDocument;
 import org.ballerina.ramltoopenapi.parser.RamlFileValidator;
-import org.ballerina.ramltoopenapi.parser.RamlParser;
-import org.ballerina.ramltoopenapi.writer.OpenApiWriter;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -117,10 +113,10 @@ public class RamlToOpenApiCommand implements BLauncherCmd {
         outStream.println("Found " + ramlFiles.size() + " RAML file(s) to convert");
         outStream.println();
 
-        // Initialize components
-        RamlParser parser = new RamlParser();
-        RamlToOpenApiConverter converter = new RamlToOpenApiConverter(strict);
-        OpenApiWriter writer = new OpenApiWriter();
+        // Initialize converter with facade API
+        RamlToOpenApiConverter converter = RamlToOpenApiConverter.builder()
+            .strictMode(strict)
+            .build();
 
         int successCount = 0;
         int failureCount = 0;
@@ -130,14 +126,8 @@ public class RamlToOpenApiCommand implements BLauncherCmd {
             try {
                 outStream.println("Converting: " + ramlFile.getName());
 
-                // Parse RAML
-                RamlDocument ramlDoc = parser.parse(ramlFile);
-
-                // Convert to OpenAPI
-                OpenApiDocument openApiDoc = converter.convert(ramlDoc);
-
                 // Determine output file
-                File outputFile = null;
+                File outputFile;
                 if (outputPath != null) {
                     File outputDir = new File(outputPath);
                     if (ramlFiles.size() > 1 || outputDir.isDirectory()) {
@@ -149,10 +139,14 @@ public class RamlToOpenApiCommand implements BLauncherCmd {
                         // Single file output
                         outputFile = outputDir;
                     }
+                } else {
+                    // No output path specified, use same directory as input
+                    String fileName = generateFileName(ramlFile.getName(), format);
+                    outputFile = new File(ramlFile.getParentFile(), fileName);
                 }
 
-                // Write output
-                File resultFile = writer.write(openApiDoc, input, outputFile, format);
+                // Convert and write using the facade API
+                File resultFile = converter.convertAndWrite(ramlFile, outputFile, format);
 
                 outStream.println("  ✓ Success: " + resultFile.getAbsolutePath());
                 successCount++;
