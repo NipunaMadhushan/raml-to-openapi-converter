@@ -36,7 +36,6 @@ jobs:
         run: ./gradlew build
 
       - name: Ballerina Central Push
-        if: ${{ inputs.environment == 'CENTRAL' }}
         env:
           BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
           packageUser: ${{ github.actor }}
