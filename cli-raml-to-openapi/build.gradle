@@ -1,0 +1,180 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'checkstyle'
+    id 'com.github.spotbugs' version '6.0.24'
+}
+
+// Ballerina tool configuration
+def ballerinaToolDir = "${projectDir}/src/main/ballerina/tool-raml-to-openapi"
+def balToolVersion = project.version.toString().split("-")[0]
+def ballerinaVersion = "${ballerinaLangVersion}"
+def libJarPath = "../../../../build/libs/cli-raml-to-openapi-${project.version}.jar"
+def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN')
+
+dependencies {
+    // Dependency on the main raml-to-openapi module
+    implementation project(':raml-to-openapi')
+
+    // Ballerina CLI - compileOnly since it's provided by the Ballerina runtime
+    implementation group: 'org.ballerinalang', name: 'ballerina-cli', version: "${ballerinaLangVersion}"
+
+    // Additional dependencies for CLI
+    implementation group: 'info.picocli', name: 'picocli', version: "${picocliVersion}"
+
+    // Annotations and Testing
+    implementation group: 'org.jetbrains', name: 'annotations', version: "${jetbrainsAnnotationsVersion}"
+    testImplementation group: 'org.testng', name: 'testng', version: "${testngVersion}"
+
+    // Logging
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
+}
+
+checkstyleMain.exclude("baltool/ramltoopenapi/commands/*.java")
+checkstyleMain.exclude("org/ballerina/ramltoopenapi/cli/*.java")
+
+checkstyle {
+    toolVersion = '10.12.5'
+    config = resources.text.fromUri('https://raw.githubusercontent.com/wso2/code-quality-tools/v1.4/checkstyle/jdk-17/checkstyle.xml')
+}
+
+spotbugs {
+    excludeFilter = file("${rootProject.projectDir}/spotbugs-exclude.xml")
+}
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+    effort = com.github.spotbugs.snom.Effort.valueOf('MAX')
+    reportLevel = com.github.spotbugs.snom.Confidence.valueOf('HIGH')
+    reports {
+        html {
+            enabled = true
+        }
+        xml {
+            enabled = false
+        }
+    }
+}
+
+test {
+    useTestNG() {
+        suites 'src/test/resources/testng.xml'
+    }
+}
+
+// Update TOML files with current versions
+task updateTomlFile {
+    def balToml = file("${ballerinaToolDir}/Ballerina.toml")
+    def toolToml = file("${ballerinaToolDir}/BalTool.toml")
+    doLast {
+        if (balToml.exists()) {
+            def text = balToml.text
+            text = text.replaceAll('version\\s*=\\s*"[^"]*"', 'version = "' + balToolVersion + '"')
+            text = text.replaceAll('distribution\\s*=\\s*"[^"]*"', 'distribution = "' + ballerinaVersion + '"')
+            balToml.text = text
+        }
+        if (toolToml.exists()) {
+            def text = toolToml.text
+            text = text.replaceAll('path\\s*=\\s*"[^"]*"', 'path = "' + libJarPath + '"')
+            toolToml.text = text
+        }
+    }
+}
+
+// Configure application plugin
+application {
+    mainClassName = 'baltool.ramltoopenapi.commands.RamlToOpenApiCommand'
+}
+
+// Create executable JAR
+jar {
+    dependsOn ':raml-to-openapi:jar'
+    manifest {
+        attributes(
+                'Main-Class': 'baltool.ramltoopenapi.commands.RamlToOpenApiCommand'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveFileName = "cli-raml-to-openapi-${project.version}.jar"
+}
+
+
+// Check if Ballerina is available
+def isBallerinaAvailable() {
+    try {
+        def process = Runtime.getRuntime().exec("bal version")
+        process.waitFor()
+        return process.exitValue() == 0
+    } catch (Exception e) {
+        return false
+    }
+}
+
+def ballerinaAvailable = isBallerinaAvailable()
+
+task ballerinaPublish {
+    dependsOn updateTomlFile
+    dependsOn jar
+
+    doLast {
+        if (project.version.toString().split("-").length > 1) {
+            return
+        }
+        if (ballerinaCentralAccessToken != null) {
+            println("Publishing to the ballerina central...")
+            def env = "JAVA_OPTS -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            executeBalCommand ("push", ballerinaToolDir, env)
+        } else {
+            throw new InvalidUserDataException("Central Access Token is not present")
+        }
+    }
+}
+
+task ballerinaPublishToLocal {
+    dependsOn jar
+
+    doLast {
+        println("Publishing to the local central...")
+        def env = "JAVA_OPTS -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+        executeBalCommand ("push --repository=local", ballerinaToolDir, env)
+    }
+}
+
+build {
+    dependsOn updateTomlFile
+    dependsOn checkstyleMain
+    dependsOn spotbugsMain
+    dependsOn jar
+
+    doLast {
+        executeBalCommand ("pack", ballerinaToolDir)
+
+        boolean publishToCentral = project.hasProperty('publishToCentral') ? project.publishToCentral.toBoolean() : false
+        boolean publishToLocal = project.hasProperty('publishToLocal') ? project.publishToLocal.toBoolean() : false
+
+        if (publishToCentral && ballerinaAvailable) {
+            if (project.version.toString().split("-").length > 1) {
+                return
+            }
+            if (ballerinaCentralAccessToken != null) {
+                println("Publishing to the ballerina central...")
+                def env = "JAVA_OPTS -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+                executeBalCommand ("push", ballerinaToolDir, env)
+            } else {
+                throw new InvalidUserDataException("Central Access Token is not present")
+            }
+        }
+
+        if (publishToLocal && ballerinaAvailable) {
+            println("Publishing to the local central...")
+            def env = "JAVA_OPTS -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            executeBalCommand ("push --repository=local", ballerinaToolDir, env)
+        }
+    }
+}
+
+ballerinaPublish.dependsOn build
+publish.dependsOn ballerinaPublish

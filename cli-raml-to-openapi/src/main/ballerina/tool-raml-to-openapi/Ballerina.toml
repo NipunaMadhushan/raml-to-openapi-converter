@@ -1,0 +1,6 @@
+[package]
+org = "wso2"
+name = "tool_raml_to_openapi"
+version = "1.0.0"
+distribution = "2201.13.0"
+keywords = ["converter", "raml", "openapi", "raml-to-openapi"]
