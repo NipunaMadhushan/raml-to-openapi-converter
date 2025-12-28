@@ -7,7 +7,7 @@ plugins {
 
 // Ballerina tool configuration
 def ballerinaToolDir = "${projectDir}/src/main/ballerina/tool-raml-to-openapi"
-def balToolVersion = project.version
+def balToolVersion = project.version.toString().split("-")[0]
 def ballerinaVersion = "${ballerinaLangVersion}"
 def libJarPath = "../../../../build/libs/cli-raml-to-openapi-${project.version}.jar"
 def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN')
@@ -144,6 +144,7 @@ task ballerinaPublishToLocal {
 }
 
 build {
+    dependsOn updateTomlFile
     dependsOn checkstyleMain
     dependsOn spotbugsMain
     dependsOn jar

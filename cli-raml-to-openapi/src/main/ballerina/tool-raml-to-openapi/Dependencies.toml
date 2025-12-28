@@ -10,7 +10,7 @@ distribution-version = "2201.13.1"
 [[package]]
 org = "wso2"
 name = "tool_raml_to_openapi"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0"
 modules = [
 	{org = "wso2", packageName = "tool_raml_to_openapi", moduleName = "tool_raml_to_openapi"}
 ]
