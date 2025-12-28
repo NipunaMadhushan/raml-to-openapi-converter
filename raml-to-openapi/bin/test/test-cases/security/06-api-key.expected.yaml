@@ -1,0 +1,32 @@
+openapi: 3.0.0
+info:
+  title: API Key Protected API
+  version: '1.0'
+servers:
+  - url: https://api.example.com
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      description: API Key in header
+      name: X-API-Key
+      in: header
+paths:
+  /resources:
+    get:
+      summary: Get resources
+      operationId: get_resources
+      responses:
+        "200":
+          description: Resources retrieved
+      security:
+        - apiKey: []
+  /resources/public:
+    get:
+      summary: Public endpoint
+      operationId: get_resources_public
+      responses:
+        "200":
+          description: Public data
+      security: []
+      

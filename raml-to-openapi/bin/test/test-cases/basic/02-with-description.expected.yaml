@@ -1,0 +1,19 @@
+openapi: 3.0.0
+info:
+  title: User Management API
+  version: '2.0'
+  description: |
+    This API manages user accounts and profiles.
+    Supports CRUD operations.
+servers:
+  - url: https://api.users.com/v2
+components: {}
+paths:
+  /users:
+    get:
+      summary: Retrieve all users
+      operationId: get_users
+      responses:
+        "200":
+          description: User list retrieved
+          

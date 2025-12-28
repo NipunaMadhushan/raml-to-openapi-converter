@@ -1,0 +1,38 @@
+#%RAML 1.0
+title: OAuth2 API
+version: 1.0
+baseUri: https://api.example.com
+
+securitySchemes:
+  oauth2:
+    type: OAuth 2.0
+    description: OAuth 2.0 authentication
+    settings:
+      authorizationUri: https://auth.example.com/authorize
+      accessTokenUri: https://auth.example.com/token
+      authorizationGrants: [authorization_code, client_credentials]
+      scopes:
+        - read:data
+        - write:data
+
+securedBy: [oauth2]
+
+/data:
+  get:
+    description: Get data with read scope
+    securedBy:
+      - oauth2:
+          scopes: [read:data]
+    responses:
+      200:
+        description: Data retrieved
+  
+  post:
+    description: Create data with write scope
+    securedBy:
+      - oauth2:
+          scopes: [write:data]
+    responses:
+      201:
+        description: Data created
+        

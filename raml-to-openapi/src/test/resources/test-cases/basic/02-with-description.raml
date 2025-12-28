@@ -1,0 +1,15 @@
+#%RAML 1.0
+title: User Management API
+version: 2.0
+description: |
+  This API manages user accounts and profiles.
+  Supports CRUD operations.
+baseUri: https://api.users.com/v2
+
+/users:
+  get:
+    description: Retrieve all users
+    responses:
+      200:
+        description: User list retrieved
+        

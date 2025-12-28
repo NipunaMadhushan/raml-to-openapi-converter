@@ -1,0 +1,40 @@
+#%RAML 1.0
+title: Nested Resources API
+version: 1.0
+baseUri: https://api.example.com
+
+/companies:
+  get:
+    description: List companies
+    responses:
+      200:
+        description: Companies list
+  
+  /{companyId}:
+    get:
+      description: Get company details
+      responses:
+        200:
+          description: Company details
+    
+    /employees:
+      get:
+        description: List company employees
+        responses:
+          200:
+            description: Employees list
+      
+      /{employeeId}:
+        get:
+          description: Get employee details
+          responses:
+            200:
+              description: Employee details
+        
+        /timesheets:
+          get:
+            description: Get employee timesheets
+            responses:
+              200:
+                description: Timesheets list
+                

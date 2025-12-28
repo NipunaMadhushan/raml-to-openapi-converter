@@ -1,0 +1,73 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "OAuth2 API",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "description": "OAuth 2.0 authentication",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://auth.example.com/authorize",
+            "tokenUrl": "https://auth.example.com/token",
+            "scopes": {
+              "read:data": "read - data",
+              "write:data": "write - data"
+            }
+          },
+          "clientCredentials": {
+            "tokenUrl": "https://auth.example.com/token",
+            "scopes": {
+              "read:data": "read - data",
+              "write:data": "write - data"
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/data": {
+      "get": {
+        "summary": "Get data with read scope",
+        "operationId": "get_data",
+        "responses": {
+          "200": {
+            "description": "Data retrieved"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "read:data"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create data with write scope",
+        "operationId": "post_data",
+        "responses": {
+          "201": {
+            "description": "Data created"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "write:data"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

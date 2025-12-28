@@ -1,0 +1,5 @@
+[tool]
+id = "raml-to-openapi"
+
+[[dependency]]
+path = "../../../../build/libs/cli-raml-to-openapi-1.0.0-SNAPSHOT.jar"

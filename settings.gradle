@@ -1,0 +1,4 @@
+rootProject.name = 'raml-to-openapi-converter'
+include 'cli-raml-to-openapi'
+include 'raml-to-openapi'
+
