@@ -54,4 +54,6 @@ jobs:
           packageUser: ${{ github.actor }}
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew release
+        run: |
+          ./gradlew release -Prelease.useAutomaticVersion=true
+          ./gradlew -Pversion=${VERSION} publish -x test
