@@ -18,9 +18,9 @@
 package baltool.ramltoopenapi.commands;
 
 import io.ballerina.cli.BLauncherCmd;
-import org.ballerina.ramltoopenapi.RamlToOpenApiConverter;
-import org.ballerina.ramltoopenapi.exception.ConverterException;
-import org.ballerina.ramltoopenapi.parser.RamlFileValidator;
+import org.nipunaml.ramltoopenapi.RamlToOpenApiConverter;
+import org.nipunaml.ramltoopenapi.exception.ConverterException;
+import org.nipunaml.ramltoopenapi.parser.RamlFileValidator;
 import picocli.CommandLine;
 
 import java.io.File;

@@ -76,7 +76,7 @@ Add the dependency to your `build.gradle`:
 
 ```gradle
 dependencies {
-    implementation 'org.ballerina.ramltoopenapi:raml-to-openapi:1.0.0-SNAPSHOT'
+    implementation 'org.nipunaml.ramltoopenapi:raml-to-openapi:1.0.0-SNAPSHOT'
 }
 ```
 
@@ -86,7 +86,7 @@ Add the dependency to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>org.ballerina.ramltoopenapi</groupId>
+    <groupId>org.nipunaml.ramltoopenapi</groupId>
     <artifactId>raml-to-openapi</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -115,7 +115,7 @@ export PATH=$PATH:/path/to/cli-raml-to-openapi-1.0.0-SNAPSHOT/bin
 #### Basic Conversion
 
 ```java
-import org.ballerina.ramltoopenapi.RamlToOpenApiConverter;
+import org.nipunaml.ramltoopenapi.RamlToOpenApiConverter;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.File;
 

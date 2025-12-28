@@ -20,7 +20,7 @@ A Java converter for converting RAML (RESTful API Modeling Language) specificati
 
 ```gradle
 dependencies {
-    implementation 'org.ballerina:raml-to-openapi:1.0.0-SNAPSHOT'
+    implementation 'org.nipunaml:raml-to-openapi:1.0.0-SNAPSHOT'
 }
 ```
 
@@ -28,7 +28,7 @@ dependencies {
 
 ```xml
 <dependency>
-    <groupId>org.ballerina</groupId>
+    <groupId>org.nipunaml</groupId>
     <artifactId>raml-to-openapi</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -39,7 +39,7 @@ dependencies {
 ### Basic Conversion
 
 ```java
-import org.ballerina.ramltoopenapi.RamlToOpenApiConverter;
+import org.nipunaml.ramltoopenapi.RamlToOpenApiConverter;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.File;
 
@@ -143,7 +143,7 @@ if (isValid) {
 ### Error Handling
 
 ```java
-import org.ballerina.ramltoopenapi.exception.ConverterException;
+import org.nipunaml.ramltoopenapi.exception.ConverterException;
 
 try {
     OpenAPI openApi = converter.convertToOpenApi(new File("api.raml"));
@@ -230,7 +230,7 @@ The format is auto-detected from the output file extension when using `convertAn
 ### Example 1: Simple Conversion
 
 ```java
-import org.ballerina.ramltoopenapi.RamlToOpenApiConverter;
+import org.nipunaml.ramltoopenapi.RamlToOpenApiConverter;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.File;
 
@@ -255,7 +255,7 @@ public class SimpleConversion {
 ### Example 2: Batch Processing
 
 ```java
-import org.ballerina.ramltoopenapi.RamlToOpenApiConverter;
+import org.nipunaml.ramltoopenapi.RamlToOpenApiConverter;
 import java.io.File;
 import java.util.List;
 
@@ -285,7 +285,7 @@ public class BatchConversion {
 ### Example 3: Integration with Web Service
 
 ```java
-import org.ballerina.ramltoopenapi.RamlToOpenApiConverter;
+import org.nipunaml.ramltoopenapi.RamlToOpenApiConverter;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.InputStream;
 
@@ -315,7 +315,7 @@ public class WebServiceIntegration {
 The converter uses `ConverterException` for all conversion-related errors:
 
 ```java
-import org.ballerina.ramltoopenapi.exception.ConverterException;
+import org.nipunaml.ramltoopenapi.exception.ConverterException;
 
 try {
     OpenAPI openApi = converter.convertToOpenApi(new File("api.raml"));
@@ -338,7 +338,7 @@ The converter uses SLF4J for logging. You can configure logging levels in your a
 ```xml
 <!-- logback.xml -->
 <configuration>
-    <logger name="org.ballerina.ramltoopenapi" level="INFO"/>
+    <logger name="org.nipunaml.ramltoopenapi" level="INFO"/>
 </configuration>
 ```
 

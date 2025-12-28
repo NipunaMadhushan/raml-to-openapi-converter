@@ -39,6 +39,8 @@ checkstyle {
     config = resources.text.fromUri('https://raw.githubusercontent.com/wso2/code-quality-tools/v1.4/checkstyle/jdk-17/checkstyle.xml')
 }
 
+checkstyleMain.exclude("/org/nipunaml/ramltoopenapi/cli/*.java")
+
 spotbugs {
     excludeFilter = file("${rootProject.projectDir}/spotbugs-exclude.xml")
 }

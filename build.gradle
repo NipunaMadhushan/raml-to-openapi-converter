@@ -5,7 +5,7 @@ plugins {
     id "net.researchgate.release" version "2.8.0"
 }
 
-group = 'org.ballerina.ramltoopenapi'
+group = 'org.nipunaml.ramltoopenapi'
 version = project.version
 
 def moduleVersion = project.version.replace("-SNAPSHOT", "")
@@ -69,5 +69,3 @@ release {
 test {
     useJUnitPlatform()
 }
-
-//release.dependsOn ":cli-raml-to-openapi:ballerinaPublish"
