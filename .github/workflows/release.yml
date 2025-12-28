@@ -39,11 +39,11 @@ jobs:
 
       - name: Pre release depenency version update
         env:
-          GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Version: ${VERSION}"
-          git config user.name ${{ secrets.BALLERINA_BOT_USERNAME }}
-          git config user.email ${{ secrets.BALLERINA_BOT_EMAIL }}
+          git config user.name ${{ github.actor }}
+          git config user.email ${{ secrets.USER_EMAIL }}
           git checkout -b release-${VERSION}
           git add gradle.properties
           git commit -m "Move dependencies to stable version" || echo "No changes to commit"
