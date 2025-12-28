@@ -1,12 +1,11 @@
-name: Publish RAML to OpenAPI Converter to Central
+name: Build RAML to OpenAPI Converter
 
 on:
   workflow_dispatch:
 
 jobs:
-  publish-release:
+  build:
     runs-on: ubuntu-22.04
-    if: github.repository_owner == 'wso2'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -19,24 +18,11 @@ jobs:
 
       - name: Set up Ballerina
         uses: ballerina-platform/setup-ballerina@v1.1.3
-        name: Install Ballerina
         with:
           version: 2201.13.0
-
-      - name: Update version
-        run: sed -i 's/^version=\(.*\)-SNAPSHOT$/version=\1/' gradle.properties
 
       - name: Build with Gradle
         env:
           packageUser: ${{ github.actor }}
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew build
-
-      - name: Ballerina Central Push
-        if: ${{ inputs.environment == 'CENTRAL' }}
-        env:
-          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
-          packageUser: ${{ github.actor }}
-          packagePAT: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew release
