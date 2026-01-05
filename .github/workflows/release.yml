@@ -60,6 +60,7 @@ jobs:
           packagePAT: ${{ secrets.PUBLISH_TOKEN }}
           packagePublishRepo: ${{ github.repository }}
         run: |
+          git config --global url."https://${{ secrets.PUBLISH_TOKEN }}@github.com/".insteadOf "https://github.com/"
           git stash
           ./gradlew release -Prelease.useAutomaticVersion=true
           ./gradlew -Pversion=${VERSION} publish -x test
