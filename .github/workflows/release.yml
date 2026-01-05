@@ -26,6 +26,11 @@ jobs:
         with:
           version: ${{ github.event.inputs.ballerina_version }}
 
+      - name: Set version env variable
+        run: |
+          VERSION=$(grep -w 'version' gradle.properties | cut -d= -f2 | rev | cut --complement -d- -f1 | rev | xargs)
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
       - name: Update version
         run: sed -i 's/^version=\(.*\)-SNAPSHOT$/version=\1/' gradle.properties
 
@@ -35,11 +40,36 @@ jobs:
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew build
 
-      - name: Ballerina Central Push
-        if: ${{ inputs.environment == 'CENTRAL' }}
+      - name: Pre release dependency version update
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Version: ${VERSION}"
+          git config user.name ${{ github.actor }}
+          git config user.email ${{ secrets.USER_EMAIL }}
+          git checkout -b release-${VERSION}
+          git add gradle.properties
+          git commit -m "Move dependencies to stable version" || echo "No changes to commit"
+
+      - name: Publish artifact
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
           packageUser: ${{ github.actor }}
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew release
+          packagePublishRepo: ${{ github.repository }}
+        run: |
+          git stash
+          ./gradlew release -Prelease.useAutomaticVersion=true
+          ./gradlew -Pversion=${VERSION} publish -x test
+      - name: Create Github release from the release tag
+        run: |
+          curl --request POST 'https://api.github.com/repos/${{ github.repository }}/releases' \
+          --header 'Accept: application/vnd.github.v3+json' \
+          --header 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+             "tag_name": "v'"$VERSION"'",
+             "name": "raml-to-openapi-converter-v'"$VERSION"'"
+          }'
