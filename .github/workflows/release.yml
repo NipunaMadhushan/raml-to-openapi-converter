@@ -37,12 +37,12 @@ jobs:
       - name: Build with Gradle
         env:
           packageUser: ${{ github.actor }}
-          packagePAT: ${{ secrets.GITHUB_TOKEN }}
+          packagePAT: ${{ secrets.PERSONAL_TOKEN }}
         run: ./gradlew build
 
       - name: Pre release dependency version update
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
           echo "Version: ${VERSION}"
           git config user.name ${{ github.actor }}
@@ -54,10 +54,10 @@ jobs:
       - name: Publish artifact
         env:
           DOCKER_HOST: unix:///var/run/docker.sock
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
           BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
           packageUser: ${{ github.actor }}
-          packagePAT: ${{ secrets.GITHUB_TOKEN }}
+          packagePAT: ${{ secrets.PERSONAL_TOKEN }}
           packagePublishRepo: ${{ github.repository }}
         run: |
           git stash
@@ -67,7 +67,7 @@ jobs:
         run: |
           curl --request POST 'https://api.github.com/repos/${{ github.repository }}/releases' \
           --header 'Accept: application/vnd.github.v3+json' \
-          --header 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'Authorization: Bearer ${{ secrets.PERSONAL_TOKEN }}' \
           --header 'Content-Type: application/json' \
           --data-raw '{
              "tag_name": "v'"$VERSION"'",
