@@ -54,10 +54,10 @@ jobs:
       - name: Publish artifact
         env:
           DOCKER_HOST: unix:///var/run/docker.sock
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
           BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
           packageUser: ${{ github.actor }}
-          packagePAT: ${{ secrets.PERSONAL_TOKEN }}
+          packagePAT: ${{ secrets.PUBLISH_TOKEN }}
           packagePublishRepo: ${{ github.repository }}
         run: |
           git stash
@@ -67,7 +67,7 @@ jobs:
         run: |
           curl --request POST 'https://api.github.com/repos/${{ github.repository }}/releases' \
           --header 'Accept: application/vnd.github.v3+json' \
-          --header 'Authorization: Bearer ${{ secrets.PERSONAL_TOKEN }}' \
+          --header 'Authorization: Bearer ${{ secrets.PUBLISH_TOKEN }}' \
           --header 'Content-Type: application/json' \
           --data-raw '{
              "tag_name": "v'"$VERSION"'",
