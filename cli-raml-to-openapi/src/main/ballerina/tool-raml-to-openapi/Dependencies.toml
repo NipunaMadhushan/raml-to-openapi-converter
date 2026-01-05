@@ -8,10 +8,10 @@ dependencies-toml-version = "2"
 distribution-version = "2201.13.1"
 
 [[package]]
-org = "nipunaml"
+org = "nipunal"
 name = "tool_raml_to_openapi"
 version = "1.0.0"
 modules = [
-	{org = "nipunaml", packageName = "tool_raml_to_openapi", moduleName = "tool_raml_to_openapi"}
+	{org = "nipunal", packageName = "tool_raml_to_openapi", moduleName = "tool_raml_to_openapi"}
 ]
 
